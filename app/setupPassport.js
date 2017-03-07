@@ -1,49 +1,51 @@
-var passport = require('passport'),
-    LocalStrategy = require('passport-local').Strategy,
-    bcrypt = require('bcrypt'),
-    Model = require('./model/models.js')
+import passport from 'passport';
+import bcrypt from 'bcrypt';
+import Model from './model/models.js';
+import {Strategy} from 'passport-local';
 
-module.exports = function(app) {
-  app.use(passport.initialize())
-  app.use(passport.session())
+const LocalStrategy = Strategy;
+
+module.exports = function (app) {
+  app.use(passport.initialize());
+  app.use(passport.session());
 
   passport.use(new LocalStrategy(
-    function(username, password, done) {
+    function (username, password, done) {
       Model.User.findOne({
         where: {
-          'username': username
+          username
         }
       }).then(function (user) {
         if (user == null) {
-          return done(null, false, { message: 'Incorrect credentials.' })
+          return done(null, false, { message: 'Incorrect credentials.' });
         }
-        
-        var hashedPassword = bcrypt.hashSync(password, user.salt)
-        
+
+        const hashedPassword = bcrypt.hashSync(password, user.salt);
+
         if (user.password === hashedPassword) {
-          return done(null, user)
+          return done(null, user);
         }
-        
-        return done(null, false, { message: 'Incorrect credentials.' })
-      })
+
+        return done(null, false, { message: 'Incorrect credentials.' });
+      });
     }
-  ))
+  ));
 
-  passport.serializeUser(function(user, done) {
-    done(null, user.id)
-  })
+  passport.serializeUser(function (user, done) {
+    done(null, user.id);
+  });
 
-  passport.deserializeUser(function(id, done) {
+  passport.deserializeUser(function (id, done) {
     Model.User.findOne({
       where: {
-        'id': id
+        id
       }
     }).then(function (user) {
       if (user == null) {
-        done(new Error('Wrong user id.'))
+        done(new Error('Wrong user id.'));
       }
-      
-      done(null, user)
-    })
-  })
-}
+
+      done(null, user);
+    });
+  });
+};
