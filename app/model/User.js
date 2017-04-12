@@ -23,9 +23,6 @@ var attributes = {
   },
   password: {
     type: Sequelize.STRING,
-  },
-  salt: {
-    type: Sequelize.STRING
   }
 }
 

@@ -1,4 +1,6 @@
 import Model from '../model/models.js';
+import fs from 'fs';
+import path from 'path';
 
 const htController = {};
 
@@ -31,7 +33,29 @@ htController.postNewHT = (req,res) => {
 };
 
 htController.postNewPost = (req, res) => {
-console.log(req);
+
+  const username = 'james';
+  const url = '../../src/' + 'test.jpg';
+  const type = 'i';
+  const newPost = {
+    username,
+    url,
+    type,
+  };
+
+  fs.writeFile(path.join(__dirname, '../../src/test.jpg'), req.files.file[0].buffer, (err) => {
+    if (err) {console.log(err);}
+
+    console.log('It\'s saved!');
+  });
+
+  Model.UserPost.create(newPost).then(() => {
+    /* res.redirect('/' + hashtag );*/
+  }).catch(function (error) {
+    console.log(error);
+    req.flash('error', 'Please, something went wrong with your post.');
+  });
+
   // const hashtag = req.body.hashtag;
   // const admin = ['james'];
   //

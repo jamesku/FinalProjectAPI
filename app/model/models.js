@@ -13,6 +13,6 @@ UserPost.belongsTo(htWall);
 UserPost.belongsTo(User);
 User.belongsToMany(htWall, {through: 'UserWallAccess'});
 
-connection.sync({force: true});
+connection.sync();
 
 export default {User, UserPost, htWall};

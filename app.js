@@ -1,22 +1,27 @@
 // application
 
 import express from 'express';
+import passport from 'passport';
 
-
-import setupPassport from './app/setupPassport';
+import Passport from './app/services/Passport';
 import flash from 'connect-flash';
 import session from 'express-session';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 
+
+const authenticationRoutes = require('./app/routers/AuthenticationRoutes.js')(express);
 const appRouter = require('./app/routers/appRouter.js')(express);
 const jsonParser = bodyParser.json();
 const app = express();
 const setupHandlebars = require('./app/setupHandlebars.js')(app);
 const port = process.env.PORT || 8080;
 
+
+app.use(authenticationRoutes);
+
 app.use(cookieParser());
-app.use(session({ secret: '4564f6s4fdsfdfd', resave: false, saveUninitialized: false }));
+app.use(session({ secret: '4564f6s33333323223', resave: false, saveUninitialized: false }));
 
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
@@ -24,7 +29,7 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.use('/styles', express.static(__dirname + '/styles'));
+app.use('/styles', express.static( __dirname + '/styles'));
 
 app.use(flash());
 app.use(function (req, res, next) {
@@ -37,7 +42,14 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 
-setupPassport(app);
+Passport(app);
+
+const authStrategy = passport.authenticate('authStrategy', { session: false });
+
+app.get('/api/secret', authStrategy, function (req, res) {
+  console.log(`The current user is ${req.user.username}`);
+  res.send(`The current user is ${req.user.username}`);
+});
 
 app.use('/', appRouter);
 

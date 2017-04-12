@@ -1,6 +1,9 @@
 import passport from 'passport';
 import signupController from '../controllers/signupController.js';
 import htControllers from '../controllers/htControllers.js';
+import multer from 'multer';
+
+const upload = multer();
 
 module.exports = function (express) {
   const router = express.Router();
@@ -14,7 +17,6 @@ module.exports = function (express) {
     res.redirect('/');
   };
 
-  router.get('/signup', signupController.show);
   router.post('/signup', signupController.signup);
 
   router.post('/login', passport.authenticate('local', {
@@ -37,7 +39,9 @@ module.exports = function (express) {
   });
 
   router.post('/newhashtag', htControllers.postNewHT);
-  router.post('/newpost', htControllers.postNewPost);
+
+  const cpUpload = upload.fields([{ name: 'file', maxCount: 50 }, { name: 'hashtag', maxCount: 1 }]);
+  router.post('/newpost', cpUpload, htControllers.postNewPost);
 
   return router;
 };
