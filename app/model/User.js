@@ -1,14 +1,6 @@
-var Sequelize = require('sequelize')
+import Sequelize from 'sequelize';
 
-var attributes = {
-  username: {
-    type: Sequelize.STRING,
-    allowNull: false,
-    unique: true,
-    validate: {
-      is: /^[a-z0-9\_\-]+$/i,
-    }
-  },
+const attributes = {
   email: {
     type: Sequelize.STRING,
     validate: {
@@ -23,12 +15,15 @@ var attributes = {
   },
   password: {
     type: Sequelize.STRING,
+  },
+  jwt: {
+    type: Sequelize.STRING,
   }
-}
+};
 
-var options = {
+const options = {
   freezeTableName: true
-}
+};
 
-module.exports.attributes = attributes
-module.exports.options = options
+module.exports.attributes = attributes;
+module.exports.options = options;

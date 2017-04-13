@@ -34,23 +34,23 @@ signupController.signup = (req, res, next) => {
         if (existingUser) {
           return res.status(422).json({ error: 'Username is in use' });
         }
-      });
 
-      // If the user does not exist create the user
-      // User bcrypt to has their password, remember, we never save plain text passwords!
-  bcrypt.genSalt(10, (err, salt) => {
-    if (err) {return res.json({error: 'Salt failed.'});}
-    bcrypt.hash(req.body.password, salt, null, (erro, hash) => {
-      if (erro) {return res.json({error: 'Hash failed.'});}
-      const newUser = { firstName: FirstName, lastName: LastName, email: Email, password: hash };
-      Model.User.create(newUser).then((user) => {
-        res.json({ token: tokenForUser(user) })
-              .catch(function (error) {
-                console.log(error);
-              });
+        bcrypt.genSalt(10, (err, salt) => {
+          if (err) {return res.json({error: 'Salt failed.'});}
+          bcrypt.hash(Password, salt, (erro, hash) => {
+            if (erro) {return res.json({error: 'Hash failed.'});}
+            const newUser = { firstName: FirstName, lastName: LastName, email: Email, password: hash };
+            console.log(newUser);
+            console.log("things are ok");
+
+            Model.User.create(newUser).then((user) => {
+              return res.json({ token: tokenForUser(user) });
+            }).catch(function (error) {
+              console.log(error);
+            });
+          });
+        });
       });
-    });
-  });
 };
 
 signupController.signin = (req, res, next) => {

@@ -1,7 +1,7 @@
 var Sequelize = require('sequelize')
 
 var attributes = {
-  username: {
+  PostId: {
     type: Sequelize.STRING,
     allowNull: false,
     validate: {
