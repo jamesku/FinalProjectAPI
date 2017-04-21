@@ -4,15 +4,20 @@ import path from 'path';
 
 const htController = {};
 
-// htController.get = (request, response) => {
-//   MyMoviesModel.find({}).exec()
-//   .then((data) => {
-//     return response.json(data);
-//   })
-//   .catch(error => {
-//     console.log('there is an error: ' + error);
-//   });
-// };
+htController.searchHT = (request, response) => {
+console.log(request.body.hashtag);
+  const exists = Model.htWall.findAll({
+    where: {
+      hashtag: request.body.hashtag
+    }
+  }).then( (res) => {
+
+    if (res.length > 0) {
+      return (response.json({redirect: '/' + request.body.hashtag}));
+    }
+    return (response.json({newHashtag: true}));
+  });
+};
 
 htController.postNewHT = (req,res) => {
 

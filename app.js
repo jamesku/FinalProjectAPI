@@ -10,22 +10,21 @@ import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 
 
-const authenticationRoutes = require('./app/routers/AuthenticationRoutes.js')(express);
+// const authenticationRoutes = require('./app/routers/AuthenticationRoutes.js')(express);
 const appRouter = require('./app/routers/appRouter.js')(express);
 const jsonParser = bodyParser.json();
 const app = express();
-const setupHandlebars = require('./app/setupHandlebars.js')(app);
 const port = process.env.PORT || 8080;
 
 
-app.use(authenticationRoutes);
+//app.use(authenticationRoutes);
 
 app.use(cookieParser());
-app.use(session({ secret: '4564f6s33333323223', resave: false, saveUninitialized: false }));
+app.use(session({ secret: 'adfsjwf120a!@e021as219fv12121', resave: false, saveUninitialized: false }));
 
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, JWToken');
   next();
 });
 

@@ -1,17 +1,9 @@
 import bcrypt from 'bcrypt';
 import Model from '../model/models.js';
-import jwt from 'jsonwebtoken';
+import jwt from 'jwt-then';
 import models from '../model/models.js';
 import fs from 'fs';
 
-function tokenForUser(user) {
-  const timestamp = new Date().getTime();
-  const cert = 'TEMP CERT';
-  jwt.sign(user.email, cert, { algorithm: 'RS256' }, function (err, token) {
-    return (token);
-  });
-
-}
 
 
 const signupController = {};
@@ -24,7 +16,7 @@ signupController.signup = (req, res, next) => {
 
   // If no username or password was supplied return an error
   if (!FirstName || !Password || !Email || !LastName) {
-    return res.status(422)
+    return res
       .json({ error: 'You must provide all the info!' });
   }
 
@@ -32,25 +24,37 @@ signupController.signup = (req, res, next) => {
       .then((existingUser) => {
         // If the user exist return an error on sign up
         if (existingUser) {
-          return res.status(422).json({ error: 'Username is in use' });
+          return res.json({ error: 'Username is in use' });
         }
 
+        const timestamp = new Date().getTime();
+        const cert = 'TEMP CERT';
+        const tokenObj = {};
+
+        console.log(tokenObj);
+        jwt.sign(Email, cert).then((token) =>{
+          generateNewUser(token);}
+        );
+      });
+
+function generateNewUser(token) {
         bcrypt.genSalt(10, (err, salt) => {
           if (err) {return res.json({error: 'Salt failed.'});}
           bcrypt.hash(Password, salt, (erro, hash) => {
             if (erro) {return res.json({error: 'Hash failed.'});}
-            const newUser = { firstName: FirstName, lastName: LastName, email: Email, password: hash };
+            const newUser = { firstName: FirstName, lastName: LastName, email: Email, password: hash, jwt: token };
             console.log(newUser);
-            console.log("things are ok");
+            console.log('things are ok');
 
             Model.User.create(newUser).then((user) => {
-              return res.json({ token: tokenForUser(user) });
+              res.json({token, userId: user.dataValues.id});
+
             }).catch(function (error) {
               console.log(error);
             });
           });
         });
-      });
+    };
 };
 
 signupController.signin = (req, res, next) => {

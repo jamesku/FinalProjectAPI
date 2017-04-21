@@ -17,6 +17,13 @@ module.exports = function (express) {
     res.redirect('/');
   };
 
+// ###################################
+// # routes for the Hashtag controllers
+  router.post('/hashtags', htControllers.searchHT)
+
+
+
+
   router.post('/signup', signupController.signup);
 
   router.post('/login', passport.authenticate('local', {
