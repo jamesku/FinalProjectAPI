@@ -47,6 +47,8 @@ module.exports = function (express) {
 
   router.post('/newhashtag', htControllers.postNewHT);
 
+
+
   const cpUpload = upload.fields([{ name: 'file', maxCount: 50 }, { name: 'hashtag', maxCount: 1 }]);
   router.post('/newpost', cpUpload, htControllers.postNewPost);
 
