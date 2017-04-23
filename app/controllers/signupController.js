@@ -5,8 +5,8 @@ import models from '../model/models.js';
 import fs from 'fs';
 
 
-
 const signupController = {};
+const cert = 'TEMP CERT';
 
 signupController.signup = (req, res, next) => {
   // Grab the username and password from our request body
@@ -28,12 +28,13 @@ signupController.signup = (req, res, next) => {
         }
 
         const timestamp = new Date().getTime();
-        const cert = 'TEMP CERT';
+
         const tokenObj = {};
 
         console.log(tokenObj);
-        jwt.sign(Email, cert).then((token) =>{
-          generateNewUser(token);}
+        jwt.sign(Email, cert).then((token) => {
+          generateNewUser(token);
+        }
         );
       });
 
@@ -57,35 +58,65 @@ function generateNewUser(token) {
     };
 };
 
-signupController.signin = (req, res, next) => {
-  User
-  .findOne({username: req.body.username})
-  .exec(function(err, user) {
-        if (err) throw err;
-        if (!user) {
-            return res.status(404).json({
-               error: true,
-               message: 'Username or Password is Wrong'
-             });
-           }
-      bcrypt.compare(req.body.password, user.password,
-        function(err, valid) {
-          if (!valid) {
-           return res.status(404).json({
-                   error: true,
-                   message: 'Username or Password is Wrong'
-             });
-          }
+signupController.login = (req, res, next) => {
 
-        var token = utils.generateToken(user);
-        user = utils.getCleanUser(user);
-        res.json({
-           user: user,
-           token: token
-         });
-       });
-   });
-}
+console.log('singupcontroler');
+
+  Model.User.findOne({ where: { email: req.body.creds.email } })
+    .then((user) => {
+      console.log(user);
+      // If the user exist return an error on sign up
+      if (!user) {
+        return res.json({ error: 'Email doesn\'t match a known account!' });
+      }
+
+      return (bcrypt.compare(req.body.creds.password, user.password, function (err, bool) {
+        console.log(bool);
+        if (bool) {
+          jwt.sign(req.body.creds.email, cert).then((token) => {
+            console.log("succes");
+            return (res.json({
+              user,
+              token
+            }));
+          });
+        } else {
+          return res.json({error: 'Password doesn\'t match our files'});
+        }
+      }));
+
+    });
+
+
+
+  // User
+  // .findOne({username: req.body.username})
+  // .exec(function(err, user) {
+  //       if (err) throw err;
+  //       if (!user) {
+  //           return res.status(404).json({
+  //              error: true,
+  //              message: 'Username or Password is Wrong'
+  //            });
+  //          }
+  //     bcrypt.compare(req.body.password, user.password,
+  //       function(err, valid) {
+  //         if (!valid) {
+  //          return res.status(404).json({
+  //                  error: true,
+  //                  message: 'Username or Password is Wrong'
+  //            });
+  //         }
+  //
+  //       var token = utils.generateToken(user);
+  //       user = utils.getCleanUser(user);
+  //       res.json({
+  //          user: user,
+  //          token: token
+  //        });
+  //      });
+  //  });
+};
 
 export default signupController;
 
